@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface User {
-  nik: string;
+  username: string;
   name: string;
   role: 'citizen' | 'official';
   verified: boolean;
@@ -15,7 +15,7 @@ interface AppState {
   a11yHighContrast: boolean;
   toggleA11y: () => void;
   user: User | null;
-  login: (nik: string, role?: 'citizen' | 'official') => void;
+  login: (username: string, role?: 'citizen' | 'official') => void;
   logout: () => void;
   isOffline: boolean;
   setOffline: (status: boolean) => void;
@@ -29,7 +29,7 @@ export const translations = {
     petitions: 'Petisi Warga',
     funds: 'Galang Dana',
     events: 'Acara Lokal',
-    login: 'Masuk dengan NIK',
+    login: 'Masuk dengan Alias',
     logout: 'Keluar',
     verified: 'Warga Terverifikasi',
     unverified: 'Belum Terverifikasi',
@@ -46,7 +46,7 @@ export const translations = {
     petitions: 'Citizen Petitions',
     funds: 'Crowdfunding',
     events: 'Local Events',
-    login: 'Login with NIK',
+    login: 'Login Anonymously',
     logout: 'Logout',
     verified: 'Verified Citizen',
     unverified: 'Unverified',
@@ -79,10 +79,9 @@ export const useStore = create<AppState>((set) => ({
     return { a11yHighContrast: newStatus };
   }),
   user: null,
-  login: (nik, role = 'citizen') => {
-    // Mock encrypted NIK verification
-    const verified = nik.length === 16;
-    set({ user: { nik: btoa(nik), name: 'Warga ' + nik.substring(0,4), role, verified } });
+  login: (username, role = 'citizen') => {
+    const finalName = username.trim() || 'Anonim_' + Math.floor(Math.random() * 1000);
+    set({ user: { username: finalName, name: finalName, role, verified: true } });
   },
   logout: () => set({ user: null }),
   isOffline: !navigator.onLine,

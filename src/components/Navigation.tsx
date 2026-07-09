@@ -8,17 +8,13 @@ const Navigation = () => {
   const { theme, toggleTheme, language, setLanguage, a11yHighContrast, toggleA11y, user, login, logout } = useStore();
   const t = translations[language];
   const location = useLocation();
-  const [nikInput, setNikInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogin = (e: React.FormEvent, role: 'citizen' | 'official' = 'citizen') => {
     e.preventDefault();
-    if (nikInput.length >= 16) {
-      login(nikInput, role);
-      setNikInput('');
-    } else {
-      alert('NIK harus 16 digit untuk verifikasi yang valid.');
-    }
+    login(usernameInput, role);
+    setUsernameInput('');
   };
 
   return (
@@ -73,13 +69,13 @@ const Navigation = () => {
             <form onSubmit={handleLogin} className="flex gap-2">
               <input 
                 type="text" 
-                placeholder="16 Digit NIK..." 
+                placeholder="Nama Samaran..." 
                 className="input" 
                 style={{padding: '0.25rem 0.5rem', width: '150px'}}
-                value={nikInput}
-                onChange={e => setNikInput(e.target.value)}
-                maxLength={16}
-                aria-label="Masukkan NIK"
+                value={usernameInput}
+                onChange={e => setUsernameInput(e.target.value)}
+                maxLength={30}
+                aria-label="Masukkan Nama Samaran"
               />
               <button type="submit" className="btn btn-primary text-sm">Masuk Warga</button>
               <button type="button" onClick={(e) => handleLogin(e, 'official')} className="btn btn-secondary text-sm">Perangkat</button>
@@ -116,11 +112,11 @@ const Navigation = () => {
                <form onSubmit={handleLogin} className="flex flex-col gap-2">
                <input 
                  type="text" 
-                 placeholder="Masukkan 16 Digit NIK" 
+                 placeholder="Nama Samaran..." 
                  className="input" 
-                 value={nikInput}
-                 onChange={e => setNikInput(e.target.value)}
-                 maxLength={16}
+                 value={usernameInput}
+                 onChange={e => setUsernameInput(e.target.value)}
+                 maxLength={30}
                />
                <button type="submit" className="btn btn-primary w-full">Masuk Warga</button>
              </form>

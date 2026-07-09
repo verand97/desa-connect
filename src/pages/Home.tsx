@@ -27,9 +27,9 @@ const Home = () => {
           Suarakan aspirasi, galang dana, dan majukan lingkungan secara transparan dengan mudah.
         </p>
         {!user && (
-          <div className="mt-8 p-4 max-w-3xl mx-auto flex items-start text-left gap-3" style={{ borderRadius: 'var(--radius)', border: '1px solid var(--warning)', backgroundColor: 'rgba(217, 119, 6, 0.05)' }}>
-            <AlertTriangle className="flex-shrink-0 mt-0.5" size={18} color="var(--warning)"/>
-            <span className="text-sm font-medium" style={{ color: '#b45309' }}>Anda belum terverifikasi. Masukkan NIK Anda di kanan atas untuk ikut berpartisipasi dan berdiskusi. Data terenkripsi dengan aman.</span>
+          <div className="mt-8 p-4 max-w-3xl mx-auto flex items-start text-left gap-3" style={{ borderRadius: 'var(--radius)', border: '1px solid var(--accent-primary)', backgroundColor: 'rgba(15, 118, 110, 0.05)' }}>
+            <AlertTriangle className="flex-shrink-0 mt-0.5" size={18} color="var(--accent-primary)"/>
+            <span className="text-sm font-medium" style={{ color: 'var(--accent-primary)' }}>Masuk secara anonim dengan mengisi nama samaran (alias) di kanan atas untuk ikut berdiskusi dan membuat petisi. Privasi Anda 100% terjaga.</span>
           </div>
         )}
       </header>
