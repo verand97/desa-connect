@@ -8,10 +8,13 @@ import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing';
 
 function App() {
-  const { isOffline, setOffline, language, user } = useStore();
+  const { isOffline, setOffline, language, user, fetchData } = useStore();
   const t = translations[language];
 
   useEffect(() => {
+    // Fetch data from Supabase on mount
+    fetchData();
+
     const handleOnline = () => {
       setOffline(false);
       // Simulate auto-sync

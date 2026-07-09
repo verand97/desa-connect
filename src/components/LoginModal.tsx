@@ -10,11 +10,14 @@ const LoginModal = () => {
   const [password, setPassword] = useState('');
   const [nik, setNik] = useState('');
 
+  const [isRegister, setIsRegister] = useState(false);
+
   const handleClose = () => {
     setLoginModalOpen(false);
     setUsername('');
     setPassword('');
     setNik('');
+    setIsRegister(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,16 +61,20 @@ const LoginModal = () => {
           <X size={24} />
         </button>
         
-        <h2 className="text-2xl font-bold mb-2 text-center">Masuk ke Sistem</h2>
-        <p className="text-secondary text-sm text-center mb-6">Gunakan satu pintu untuk semua akses</p>
+        <h2 className="text-2xl font-bold mb-2 text-center">{isRegister ? 'Daftar Akun Warga' : 'Masuk ke Sistem'}</h2>
+        <p className="text-secondary text-sm text-center mb-6">
+          {isRegister ? 'Buat identitas anonim Anda sekarang' : 'Gunakan satu pintu untuk semua akses'}
+        </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>ID Akun / Nama Samaran / Email</label>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>
+              {isRegister ? 'Nama Samaran / Email' : 'ID Akun / Nama Samaran'}
+            </label>
             <input 
               type="text" 
               className="input" 
-              placeholder="Masukkan identitas Anda" 
+              placeholder={isRegister ? "Pilih nama samaran Anda" : "Masukkan identitas Anda"} 
               required
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -79,7 +86,7 @@ const LoginModal = () => {
             <input 
               type="password" 
               className="input" 
-              placeholder="Masukkan kata sandi" 
+              placeholder={isRegister ? "Buat kata sandi yang kuat" : "Masukkan kata sandi"} 
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -105,9 +112,27 @@ const LoginModal = () => {
           </div>
           
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem', justifyContent: 'center', fontSize: '1.125rem', padding: '0.875rem' }}>
-            Masuk
+            {isRegister ? 'Daftar Sekarang' : 'Masuk'}
           </button>
         </form>
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          {isRegister ? (
+            <>
+              Sudah punya akun?{' '}
+              <button onClick={() => setIsRegister(false)} style={{ color: 'var(--accent-primary)', fontWeight: 600, textDecoration: 'underline' }}>
+                Masuk di sini
+              </button>
+            </>
+          ) : (
+            <>
+              Warga baru?{' '}
+              <button onClick={() => setIsRegister(true)} style={{ color: 'var(--accent-primary)', fontWeight: 600, textDecoration: 'underline' }}>
+                Daftar akun
+              </button>
+            </>
+          )}
+        </div>
       </motion.div>
     </div>
   );

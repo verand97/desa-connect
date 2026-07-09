@@ -62,7 +62,7 @@ const Navigation = () => {
             </div>
           ) : (
             <button onClick={() => setLoginModalOpen(true)} className="btn btn-primary text-sm px-6">
-              Masuk / Daftar
+              {t.loginBtn}
             </button>
           )}
         </div>
@@ -95,7 +95,7 @@ const Navigation = () => {
             </div>
             {!user && (
                <button onClick={() => { setLoginModalOpen(true); setMobileMenuOpen(false); }} className="btn btn-primary w-full">
-                 Masuk / Daftar
+                 {t.loginBtn}
                </button>
             )}
 
