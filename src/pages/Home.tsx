@@ -3,17 +3,10 @@ import { useStore, translations } from '../store';
 import { motion } from 'framer-motion';
 import { ThumbsUp, MessageSquare, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
-const mockPetitions = [
-  { id: 1, title: 'Perbaikan Lampu Jalan RT 03', status: 'approved', signatures: 145, target: 150, date: '2026-07-01' },
-  { id: 2, title: 'Pembangunan Saluran Air Antisipasi Banjir', status: 'pending', signatures: 89, target: 200, date: '2026-07-05' },
-];
 
-const mockFunds = [
-  { id: 1, title: 'Renovasi Poskamling RW 05', collected: 1500000, target: 5000000, donors: 34 },
-];
 
 const Home = () => {
-  const { language, user, isOffline } = useStore();
+  const { language, user, isOffline, petitions, funds, supportPetition, createPetition, donate } = useStore();
   const t = translations[language];
   const [activeTab, setActiveTab] = useState<'petitions' | 'funds' | 'events'>('petitions');
 
@@ -29,7 +22,7 @@ const Home = () => {
         {!user && (
           <div className="mt-8 p-4 max-w-3xl mx-auto flex items-start text-left gap-3" style={{ borderRadius: 'var(--radius)', border: '1px solid var(--accent-primary)', backgroundColor: 'rgba(15, 118, 110, 0.05)' }}>
             <AlertTriangle className="flex-shrink-0 mt-0.5" size={18} color="var(--accent-primary)"/>
-            <span className="text-sm font-medium" style={{ color: 'var(--accent-primary)' }}>Masuk secara anonim dengan mengisi nama samaran (alias) di kanan atas untuk ikut berdiskusi dan membuat petisi. Privasi Anda 100% terjaga.</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--accent-primary)' }}>Masuk secara anonim dengan klik tombol <b>Masuk / Daftar</b> di pojok kanan atas untuk ikut berdiskusi dan membuat petisi. Privasi Anda 100% terjaga.</span>
           </div>
         )}
       </header>
@@ -50,7 +43,7 @@ const Home = () => {
       >
         {activeTab === 'petitions' && (
           <div className="grid md-grid-cols-1 grid-cols-2 gap-6">
-            {mockPetitions.map(p => (
+            {petitions.map(p => (
               <div key={p.id} className="card flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <h3 className="font-bold text-lg">{p.title}</h3>
@@ -64,7 +57,7 @@ const Home = () => {
                 
                 <div>
                   <div className="flex justify-between text-sm font-semibold mb-2">
-                    <span className="text-primary">{p.signatures} Dukungan</span>
+                    <span className="text-accent-primary">{p.signatures} Dukungan</span>
                     <span className="text-secondary">Target: {p.target}</span>
                   </div>
                   <div className="progress-bar">
@@ -73,16 +66,36 @@ const Home = () => {
                 </div>
 
                 <div className="flex gap-2 mt-4">
-                  <button className="btn btn-primary flex-1" disabled={!user || isOffline}>
+                  <button 
+                    className="btn btn-primary flex-1" 
+                    disabled={!user || isOffline}
+                    onClick={() => supportPetition(p.id)}
+                  >
                     <ThumbsUp size={16} /> {t.supportPetition}
                   </button>
-                  <button className="btn btn-secondary flex-1">
-                    <MessageSquare size={16} /> Diskusi (Transparan)
+                  <button 
+                    className="btn btn-secondary flex-1"
+                    onClick={() => alert('Fitur diskusi sedang dalam pengembangan.')}
+                  >
+                    <MessageSquare size={16} /> Diskusi
                   </button>
                 </div>
               </div>
             ))}
-            <div className="card flex items-center justify-center border-dashed cursor-pointer hover:bg-opacity-50" style={{borderStyle: 'dashed'}}>
+            <div 
+              className="card flex items-center justify-center border-dashed cursor-pointer" 
+              style={{borderStyle: 'dashed', backgroundColor: 'transparent'}}
+              onClick={() => {
+                if (!user) {
+                  alert('Silakan login dengan nama samaran terlebih dahulu.');
+                  return;
+                }
+                const title = prompt('Masukkan judul petisi baru:');
+                if (title) {
+                  createPetition(title, 100);
+                }
+              }}
+            >
               <div className="text-center text-secondary">
                 <div className="text-2xl mb-2">+</div>
                 <div className="font-bold">{t.createPetition}</div>
@@ -93,7 +106,7 @@ const Home = () => {
 
         {activeTab === 'funds' && (
           <div className="grid md-grid-cols-1 grid-cols-2 gap-6">
-             {mockFunds.map(f => (
+             {funds.map(f => (
                <div key={f.id} className="card flex-col gap-4">
                   <h3 className="font-bold text-lg mb-2">{f.title}</h3>
                   <div className="text-sm mb-4">{f.donors} Donatur telah berpartisipasi</div>
@@ -106,7 +119,18 @@ const Home = () => {
                       <div className="progress-fill" style={{width: `${Math.min(100, (f.collected/f.target)*100)}%`}}></div>
                     </div>
                   </div>
-                  <button className="btn btn-primary mt-4 w-full" disabled={!user || isOffline}>
+                  <button 
+                    className="btn btn-primary mt-4 w-full" 
+                    disabled={!user || isOffline}
+                    onClick={() => {
+                      const amount = prompt('Masukkan jumlah donasi (Rp):', '50000');
+                      const parsed = parseInt(amount || '0', 10);
+                      if (parsed > 0) {
+                        donate(f.id, parsed);
+                        alert(`Terima kasih atas donasi sebesar Rp ${parsed.toLocaleString('id-ID')}!`);
+                      }
+                    }}
+                  >
                     {t.donate}
                   </button>
                </div>

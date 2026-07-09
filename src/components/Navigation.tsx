@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Moon, Sun, Bell, UserCircle, Globe, Accessibility, Menu, X } from 'lucide-react';
 import { useStore, translations } from '../store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navigation = () => {
-  const { theme, toggleTheme, language, setLanguage, a11yHighContrast, toggleA11y, user, login, logout } = useStore();
+  const { theme, toggleTheme, language, setLanguage, a11yHighContrast, toggleA11y, user, logout, setLoginModalOpen } = useStore();
   const t = translations[language];
   const location = useLocation();
-  const [usernameInput, setUsernameInput] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleLogin = (e: React.FormEvent, role: 'citizen' | 'official' = 'citizen') => {
-    e.preventDefault();
-    login(usernameInput, role);
-    setUsernameInput('');
-  };
 
   return (
     <header className="header p-4">
@@ -26,10 +19,13 @@ const Navigation = () => {
           </Link>
           
           <nav className="nav-links desktop-only">
-            <Link to="/" className={location.pathname === '/' ? 'font-bold text-primary' : 'text-secondary'}>
+            <Link to="/" className={location.pathname === '/' ? 'font-bold text-accent-primary' : 'text-secondary'}>
               {t.home}
             </Link>
-            {user?.role === 'official' && (
+            <Link to="/app" className={location.pathname === '/app' ? 'font-bold text-accent-primary' : 'text-secondary'}>
+              {t.community}
+            </Link>
+            {(user?.role === 'rtrw' || user?.role === 'superadmin') && (
               <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'font-bold text-primary' : 'text-secondary'}>
                 {t.dashboard}
               </Link>
@@ -66,20 +62,9 @@ const Navigation = () => {
               <button onClick={logout} className="text-sm text-secondary hover:text-danger">{t.logout}</button>
             </div>
           ) : (
-            <form onSubmit={handleLogin} className="flex gap-2">
-              <input 
-                type="text" 
-                placeholder="Nama Samaran..." 
-                className="input" 
-                style={{padding: '0.25rem 0.5rem', width: '150px'}}
-                value={usernameInput}
-                onChange={e => setUsernameInput(e.target.value)}
-                maxLength={30}
-                aria-label="Masukkan Nama Samaran"
-              />
-              <button type="submit" className="btn btn-primary text-sm">Masuk Warga</button>
-              <button type="button" onClick={(e) => handleLogin(e, 'official')} className="btn btn-secondary text-sm">Perangkat</button>
-            </form>
+            <button onClick={() => setLoginModalOpen(true)} className="btn btn-primary text-sm px-6">
+              Masuk / Daftar
+            </button>
           )}
         </div>
 
@@ -101,7 +86,8 @@ const Navigation = () => {
             {/* Same controls for mobile, simplified */}
             <nav className="flex flex-col gap-2">
                <Link to="/" onClick={() => setMobileMenuOpen(false)}>{t.home}</Link>
-               {user?.role === 'official' && <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t.dashboard}</Link>}
+               <Link to="/app" onClick={() => setMobileMenuOpen(false)}>{t.community}</Link>
+               {(user?.role === 'rtrw' || user?.role === 'superadmin') && <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t.dashboard}</Link>}
             </nav>
             <div className="flex gap-4">
               <button onClick={toggleTheme}>{theme === 'light' ? 'Mode Gelap' : 'Mode Terang'}</button>
@@ -109,17 +95,9 @@ const Navigation = () => {
               <button onClick={() => setLanguage(language === 'id' ? 'en' : 'id')}>{language === 'id' ? 'English' : 'Bahasa Indonesia'}</button>
             </div>
             {!user && (
-               <form onSubmit={handleLogin} className="flex flex-col gap-2">
-               <input 
-                 type="text" 
-                 placeholder="Nama Samaran..." 
-                 className="input" 
-                 value={usernameInput}
-                 onChange={e => setUsernameInput(e.target.value)}
-                 maxLength={30}
-               />
-               <button type="submit" className="btn btn-primary w-full">Masuk Warga</button>
-             </form>
+               <button onClick={() => { setLoginModalOpen(true); setMobileMenuOpen(false); }} className="btn btn-primary w-full">
+                 Masuk / Daftar
+               </button>
             )}
             {user && (
               <button onClick={logout} className="btn btn-secondary">{t.logout}</button>
