@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStore, translations } from '../store';
 import { motion } from 'framer-motion';
 import { ThumbsUp, MessageSquare, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
@@ -27,9 +27,9 @@ const Home = () => {
           Suarakan aspirasi, galang dana, dan majukan lingkungan secara transparan dengan mudah.
         </p>
         {!user && (
-          <div className="mt-8 p-4 card max-w-3xl mx-auto flex items-start text-left gap-3" style={{borderColor: 'var(--warning)', backgroundColor: 'rgba(245, 158, 11, 0.05)'}}>
-            <AlertTriangle className="flex-shrink-0 mt-1" size={20} color="var(--warning)"/>
-            <span className="text-sm font-medium">Anda belum terverifikasi. Masukkan NIK Anda di kanan atas untuk ikut berpartisipasi dan berdiskusi. Data terenkripsi dengan aman.</span>
+          <div className="mt-8 p-4 max-w-3xl mx-auto flex items-start text-left gap-3" style={{ borderRadius: 'var(--radius)', border: '1px solid var(--warning)', backgroundColor: 'rgba(217, 119, 6, 0.05)' }}>
+            <AlertTriangle className="flex-shrink-0 mt-0.5" size={18} color="var(--warning)"/>
+            <span className="text-sm font-medium" style={{ color: '#b45309' }}>Anda belum terverifikasi. Masukkan NIK Anda di kanan atas untuk ikut berpartisipasi dan berdiskusi. Data terenkripsi dengan aman.</span>
           </div>
         )}
       </header>

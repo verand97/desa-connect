@@ -29,7 +29,7 @@ const Navigation = () => {
             <span className="gradient-text">Desa</span>Connect
           </Link>
           
-          <nav className="nav-links hidden md:flex">
+          <nav className="nav-links desktop-only">
             <Link to="/" className={location.pathname === '/' ? 'font-bold text-primary' : 'text-secondary'}>
               {t.home}
             </Link>
@@ -41,7 +41,7 @@ const Navigation = () => {
           </nav>
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="desktop-only items-center gap-4">
           {/* Notifications */}
           <button className="notification-bell" aria-label="Notifikasi Real-time">
             <Bell size={20} />
@@ -88,7 +88,7 @@ const Navigation = () => {
         </div>
 
         {/* Mobile menu toggle */}
-        <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Menu">
+        <button className="mobile-only" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Menu">
           {mobileMenuOpen ? <X /> : <Menu />}
         </button>
       </div>
@@ -100,7 +100,7 @@ const Navigation = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden mt-4 flex flex-col gap-4 overflow-hidden"
+            className="mobile-menu-container mt-4 flex flex-col gap-4 overflow-hidden"
           >
             {/* Same controls for mobile, simplified */}
             <nav className="flex flex-col gap-2">
