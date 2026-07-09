@@ -25,9 +25,9 @@ const Navigation = () => {
             <Link to="/app" className={location.pathname === '/app' ? 'font-bold text-accent-primary' : 'text-secondary'}>
               {t.community}
             </Link>
-            {(user?.role === 'rtrw' || user?.role === 'superadmin') && (
-              <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'font-bold text-primary' : 'text-secondary'}>
-                {t.dashboard}
+            {user && (
+              <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'font-bold text-accent-primary' : 'text-secondary'}>
+                {user.role === 'citizen' ? 'Dasbor Saya' : user.role === 'rtrw' ? 'Dasbor RT/RW' : 'Dasbor Utama'}
               </Link>
             )}
           </nav>
@@ -87,7 +87,7 @@ const Navigation = () => {
             <nav className="flex flex-col gap-2">
                <Link to="/" onClick={() => setMobileMenuOpen(false)}>{t.home}</Link>
                <Link to="/app" onClick={() => setMobileMenuOpen(false)}>{t.community}</Link>
-               {(user?.role === 'rtrw' || user?.role === 'superadmin') && <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t.dashboard}</Link>}
+               {user && <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{user.role === 'citizen' ? 'Dasbor Saya' : user.role === 'rtrw' ? 'Dasbor RT/RW' : 'Dasbor Utama'}</Link>}
             </nav>
             <div className="flex gap-4">
               <button onClick={toggleTheme}>{theme === 'light' ? 'Mode Gelap' : 'Mode Terang'}</button>

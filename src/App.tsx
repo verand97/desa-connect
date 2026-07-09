@@ -43,7 +43,7 @@ function App() {
           <Route path="/app" element={<Home />} />
           <Route 
             path="/dashboard" 
-            element={(user?.role === 'rtrw' || user?.role === 'superadmin') ? <Dashboard /> : <Navigate to="/" />} 
+            element={user ? <Dashboard /> : <Navigate to="/" />} 
           />
         </Routes>
       </main>
