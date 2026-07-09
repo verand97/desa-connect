@@ -5,7 +5,7 @@ import { useStore, translations } from '../store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navigation = () => {
-  const { theme, toggleTheme, language, setLanguage, a11yHighContrast, toggleA11y, user, logout, setLoginModalOpen } = useStore();
+  const { theme, toggleTheme, language, setLanguage, a11yHighContrast, toggleA11y, user, setLoginModalOpen } = useStore();
   const t = translations[language];
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,7 +59,6 @@ const Navigation = () => {
           {user ? (
             <div className="flex items-center gap-2">
               <span className="badge badge-success flex items-center gap-1"><UserCircle size={14}/> {user.name}</span>
-              <button onClick={logout} className="text-sm text-secondary hover:text-danger">{t.logout}</button>
             </div>
           ) : (
             <button onClick={() => setLoginModalOpen(true)} className="btn btn-primary text-sm px-6">
@@ -99,9 +98,7 @@ const Navigation = () => {
                  Masuk / Daftar
                </button>
             )}
-            {user && (
-              <button onClick={logout} className="btn btn-secondary">{t.logout}</button>
-            )}
+
           </motion.div>
         )}
       </AnimatePresence>

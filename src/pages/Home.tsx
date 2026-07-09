@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStore, translations } from '../store';
-import { motion } from 'framer-motion';
-import { ThumbsUp, MessageSquare, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ThumbsUp, MessageSquare, AlertTriangle, CheckCircle, Clock, X } from 'lucide-react';
 
 
 
@@ -9,6 +9,10 @@ const Home = () => {
   const { language, user, isOffline, petitions, funds, supportPetition, createPetition, donate } = useStore();
   const t = translations[language];
   const [activeTab, setActiveTab] = useState<'petitions' | 'funds' | 'events'>('petitions');
+  const [petitionModalOpen, setPetitionModalOpen] = useState(false);
+  const [petitionTitle, setPetitionTitle] = useState('');
+  const [donateModalOpen, setDonateModalOpen] = useState<number | null>(null);
+  const [donateAmount, setDonateAmount] = useState('50000');
 
   return (
     <div className="flex-col gap-6">
@@ -90,10 +94,7 @@ const Home = () => {
                   alert('Silakan login dengan nama samaran terlebih dahulu.');
                   return;
                 }
-                const title = prompt('Masukkan judul petisi baru:');
-                if (title) {
-                  createPetition(title, 100);
-                }
+                setPetitionModalOpen(true);
               }}
             >
               <div className="text-center text-secondary">
@@ -122,14 +123,7 @@ const Home = () => {
                   <button 
                     className="btn btn-primary mt-4 w-full" 
                     disabled={!user || isOffline}
-                    onClick={() => {
-                      const amount = prompt('Masukkan jumlah donasi (Rp):', '50000');
-                      const parsed = parseInt(amount || '0', 10);
-                      if (parsed > 0) {
-                        donate(f.id, parsed);
-                        alert(`Terima kasih atas donasi sebesar Rp ${parsed.toLocaleString('id-ID')}!`);
-                      }
-                    }}
+                    onClick={() => setDonateModalOpen(f.id)}
                   >
                     {t.donate}
                   </button>
@@ -144,6 +138,75 @@ const Home = () => {
           </div>
         )}
       </motion.div>
+
+      <AnimatePresence>
+        {petitionModalOpen && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="card"
+              style={{ width: '100%', maxWidth: '450px', position: 'relative' }}
+            >
+              <button onClick={() => setPetitionModalOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--text-secondary)' }}><X size={24} /></button>
+              <h2 className="text-xl font-bold mb-4">Buat Petisi Baru</h2>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-secondary">Judul Petisi</label>
+                  <input type="text" className="input" placeholder="Contoh: Perbaikan Jalan Berlubang di RT 01" value={petitionTitle} onChange={e => setPetitionTitle(e.target.value)} />
+                </div>
+                <button 
+                  className="btn btn-primary w-full justify-center mt-2 py-3 text-lg"
+                  onClick={() => {
+                    if (petitionTitle.trim()) {
+                      createPetition(petitionTitle, 100);
+                      setPetitionModalOpen(false);
+                      setPetitionTitle('');
+                    }
+                  }}
+                >
+                  Ajukan Petisi
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {donateModalOpen !== null && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="card"
+              style={{ width: '100%', maxWidth: '400px', position: 'relative' }}
+            >
+              <button onClick={() => setDonateModalOpen(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--text-secondary)' }}><X size={24} /></button>
+              <h2 className="text-xl font-bold mb-4">Nominal Donasi</h2>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-secondary">Jumlah (Rp)</label>
+                  <input type="number" className="input" placeholder="50000" value={donateAmount} onChange={e => setDonateAmount(e.target.value)} />
+                </div>
+                <button 
+                  className="btn btn-primary w-full justify-center mt-2 py-3 text-lg"
+                  onClick={() => {
+                    const parsed = parseInt(donateAmount || '0', 10);
+                    if (parsed > 0) {
+                      donate(donateModalOpen, parsed);
+                      setDonateModalOpen(null);
+                      setDonateAmount('50000');
+                    }
+                  }}
+                >
+                  Kirim Donasi
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

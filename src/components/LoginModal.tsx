@@ -120,6 +120,9 @@ const LoginModal = () => {
                   onChange={e => setPassword(e.target.value)}
                 />
               </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--warning)', marginTop: '0.25rem', padding: '0.5rem', backgroundColor: 'rgba(217, 119, 6, 0.1)', borderRadius: '4px', textAlign: 'center' }}>
+                *Pembuatan akun perangkat desa hanya dapat dilakukan oleh Superadmin. Silakan masuk menggunakan akun yang telah diberikan.
+              </p>
             </>
           )}
           

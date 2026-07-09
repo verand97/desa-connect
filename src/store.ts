@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface User {
   username: string;
@@ -86,7 +87,9 @@ export const translations = {
   }
 };
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<AppState>()(
+  persist(
+    (set) => ({
   theme: 'light',
   toggleTheme: () => set((state) => {
     const newTheme = state.theme === 'light' ? 'dark' : 'light';
@@ -156,4 +159,10 @@ export const useStore = create<AppState>((set) => ({
   donate: (id, amount) => set((state) => ({
     funds: state.funds.map(f => f.id === id ? { ...f, collected: f.collected + amount, donors: f.donors + 1 } : f)
   }))
-}));
+    }),
+    {
+      name: 'desa-connect-storage',
+      partialize: (state) => ({ user: state.user, petitions: state.petitions, funds: state.funds }),
+    }
+  )
+);
