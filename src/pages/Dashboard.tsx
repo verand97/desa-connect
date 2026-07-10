@@ -1,8 +1,16 @@
 import { useStore } from '../store';
-import { Users, Shield, User } from 'lucide-react';
+import { Users, Shield, User, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const CitizenDashboard = () => (
+const formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  return dateString;
+};
+
+const CitizenDashboard = ({ petitions }: { petitions: any[] }) => (
   <div className="flex-col gap-6 mt-8">
     <div className="card" style={{ borderColor: 'var(--accent-primary)' }}>
       <h3 className="font-bold mb-4 text-xl flex items-center gap-2"><User size={24} className="text-accent-primary"/> Aktivitas Saya</h3>
@@ -17,10 +25,29 @@ const CitizenDashboard = () => (
         </div>
       </div>
     </div>
+
+    <div className="mt-8">
+      <h3 className="font-bold mb-4 text-xl">Petisi Terbaru</h3>
+      <div className="grid md-grid-cols-1 grid-cols-2 gap-6">
+        {petitions.slice(0, 2).map((p, i) => (
+          <div key={i} className="card flex-col gap-4 p-6">
+            {p.image_url ? (
+              <img src={p.image_url} alt={p.title} className="card-image-cover" />
+            ) : (
+              <div className="card-image-cover bg-gray-100 flex items-center justify-center text-secondary">
+                <ImageIcon size={32} opacity={0.5} />
+              </div>
+            )}
+            <h4 className="font-bold text-lg">{p.title}</h4>
+            <div className="text-sm text-secondary">Status: {p.status}</div>
+          </div>
+        ))}
+      </div>
+    </div>
   </div>
 );
 
-const RTRWDashboard = () => (
+const RTRWDashboard = ({ events }: { events: any[] }) => (
   <div className="flex-col gap-6 mt-8">
     <h3 className="font-bold mb-4 text-xl flex items-center gap-2"><Users size={24} className="text-warning"/> Pantauan Wilayah RT/RW</h3>
     <div className="grid md-grid-cols-1 grid-cols-3 gap-4 mb-6">
@@ -38,65 +65,72 @@ const RTRWDashboard = () => (
       </div>
     </div>
     
-    <div className="card">
-      <h4 className="font-bold mb-4">Perlu Tindakan Segera</h4>
-      <ul className="flex flex-col gap-3">
-        <li className="flex justify-between items-center p-3 border rounded-md" style={{borderColor: 'var(--border)'}}>
-          <div>
-            <div className="font-medium">Perbaikan Pompa Air RW 02</div>
-            <div className="text-sm text-secondary">Dilaporkan 2 hari lalu</div>
+    <div className="mt-8">
+      <h4 className="font-bold mb-4 text-xl">Acara Lokal Mendatang</h4>
+      <div className="grid md-grid-cols-1 grid-cols-2 gap-6">
+        {events.slice(0, 2).map((e, i) => (
+          <div key={i} className="card flex-col gap-4 p-6">
+            {e.image_url ? (
+              <img src={e.image_url} alt={e.title} className="card-image-cover" />
+            ) : (
+              <div className="card-image-cover bg-gray-100 flex items-center justify-center text-secondary">
+                <ImageIcon size={32} opacity={0.5} />
+              </div>
+            )}
+            <h4 className="font-bold text-lg">{e.title}</h4>
+            <div className="text-sm text-secondary">{formatDate(e.date)} • {e.location}</div>
           </div>
-          <button className="btn btn-primary text-sm">Verifikasi Lokasi</button>
-        </li>
-      </ul>
+        ))}
+      </div>
     </div>
   </div>
 );
 
-const SuperadminDashboard = () => (
+const SuperadminDashboard = ({ funds }: { funds: any[] }) => (
   <div className="flex-col gap-6 mt-8">
     <h3 className="font-bold mb-4 text-xl flex items-center gap-2"><Shield size={24} className="text-danger"/> Dasbor Utama Desa</h3>
     <div className="grid md-grid-cols-1 grid-cols-4 gap-4 mb-6">
       <div className="card p-4">
-        <div className="text-sm text-secondary">Total Penduduk Terdaftar</div>
+        <div className="text-sm text-secondary">Total Penduduk</div>
         <div className="text-2xl font-bold mt-1">3,450</div>
       </div>
       <div className="card p-4">
-        <div className="text-sm text-secondary">Dana Desa Terkelola</div>
+        <div className="text-sm text-secondary">Dana Desa</div>
         <div className="text-2xl font-bold mt-1 text-success">Rp 45M</div>
       </div>
       <div className="card p-4">
-        <div className="text-sm text-secondary">Server Uptime</div>
+        <div className="text-sm text-secondary">Uptime</div>
         <div className="text-2xl font-bold mt-1 text-accent-primary">99.9%</div>
       </div>
       <div className="card p-4">
-        <div className="text-sm text-secondary">Log Keamanan</div>
+        <div className="text-sm text-secondary">Keamanan</div>
         <div className="text-2xl font-bold mt-1">Aman</div>
       </div>
     </div>
 
-    <div className="card">
-      <h3 className="font-bold mb-4">Status Integrasi Sistem</h3>
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <span>Enkripsi Database (AES-256)</span>
-          <span className="badge badge-success">Aktif</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span>API Dukcapil (Cek NIK)</span>
-          <span className="badge badge-success">Terhubung</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span>Sistem Sinkronisasi Offline</span>
-          <span className="badge badge-success">Berjalan</span>
-        </div>
+    <div className="mt-8">
+      <h3 className="font-bold mb-4 text-xl">Galang Dana Aktif</h3>
+      <div className="grid md-grid-cols-1 grid-cols-2 gap-6">
+        {funds.slice(0, 2).map((f, i) => (
+          <div key={i} className="card flex-col gap-4 p-6">
+            {f.image_url ? (
+              <img src={f.image_url} alt={f.title} className="card-image-cover" />
+            ) : (
+              <div className="card-image-cover bg-gray-100 flex items-center justify-center text-secondary">
+                <ImageIcon size={32} opacity={0.5} />
+              </div>
+            )}
+            <h4 className="font-bold text-lg">{f.title}</h4>
+            <div className="text-sm text-secondary">Rp {(f.collected).toLocaleString('id-ID')} / Rp {(f.target).toLocaleString('id-ID')}</div>
+          </div>
+        ))}
       </div>
     </div>
   </div>
 );
 
 const Dashboard = () => {
-  const { user } = useStore();
+  const { user, petitions, events, funds } = useStore();
 
   if (!user) return null;
 
@@ -114,9 +148,9 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {user.role === 'citizen' && <CitizenDashboard />}
-      {user.role === 'rtrw' && <RTRWDashboard />}
-      {user.role === 'superadmin' && <SuperadminDashboard />}
+      {user.role === 'citizen' && <CitizenDashboard petitions={petitions} />}
+      {user.role === 'rtrw' && <RTRWDashboard events={events} />}
+      {user.role === 'superadmin' && <SuperadminDashboard funds={funds} />}
     </motion.div>
   );
 };

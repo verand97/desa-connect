@@ -10,13 +10,24 @@ interface User {
   nik?: string;
 }
 
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+}
+
 export interface Petition {
   id: number;
   title: string;
+  description?: string;
+  type?: 'petition' | 'vote';
+  poll_options?: PollOption[];
+  deadline?: string;
   status: 'pending' | 'approved';
   signatures: number;
   target: number;
   date: string;
+  image_url?: string;
 }
 
 export interface Fund {
@@ -25,6 +36,15 @@ export interface Fund {
   collected: number;
   target: number;
   donors: number;
+  image_url?: string;
+}
+
+export interface Event {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  image_url?: string;
 }
 
 interface AppState {
@@ -44,9 +64,13 @@ interface AppState {
   setLoginModalOpen: (isOpen: boolean) => void;
   petitions: Petition[];
   funds: Fund[];
+  events: Event[];
   fetchData: () => Promise<void>;
   supportPetition: (id: number) => Promise<void>;
-  createPetition: (title: string, target: number) => Promise<void>;
+  votePoll: (petitionId: number, optionId: string) => Promise<void>;
+  createPetition: (title: string, description: string, type: 'petition' | 'vote', pollOptions: PollOption[], deadline: string, target: number, imageUrl?: string) => Promise<void>;
+  createFund: (title: string, target: number, imageUrl?: string) => Promise<void>;
+  createEvent: (title: string, date: string, location: string, imageUrl?: string) => Promise<void>;
   donate: (id: number, amount: number) => Promise<void>;
 }
 
@@ -257,14 +281,17 @@ export const useStore = create<AppState>()(
       
       petitions: [],
       funds: [],
+      events: [],
 
       fetchData: async () => {
         try {
           const { data: petitionsData } = await supabase.from('petitions').select('*').order('created_at', { ascending: false });
           const { data: fundsData } = await supabase.from('funds').select('*').order('created_at', { ascending: false });
+          const { data: eventsData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
           
           if (petitionsData) set({ petitions: petitionsData });
           if (fundsData) set({ funds: fundsData });
+          if (eventsData) set({ events: eventsData });
         } catch (error) {
           console.error("Gagal mengambil data dari Supabase:", error);
         }
@@ -281,13 +308,36 @@ export const useStore = create<AppState>()(
         }
       },
 
-      createPetition: async (title, target) => {
+      votePoll: async (petitionId, optionId) => {
+        set((state) => ({
+          petitions: state.petitions.map(p => {
+            if (p.id === petitionId && p.poll_options) {
+              const newOptions = p.poll_options.map(opt => opt.id === optionId ? { ...opt, votes: opt.votes + 1 } : opt);
+              return { ...p, poll_options: newOptions };
+            }
+            return p;
+          })
+        }));
+
+        const { data } = await supabase.from('petitions').select('poll_options').eq('id', petitionId).single();
+        if (data && data.poll_options) {
+          const newOptions = data.poll_options.map((opt: PollOption) => opt.id === optionId ? { ...opt, votes: opt.votes + 1 } : opt);
+          await supabase.from('petitions').update({ poll_options: newOptions }).eq('id', petitionId);
+        }
+      },
+
+      createPetition: async (title, description, type, poll_options, deadline, target, image_url) => {
         const newPetition = {
           title,
+          description,
+          type,
+          poll_options: type === 'vote' ? poll_options : null,
+          deadline,
           target,
           status: 'pending',
           signatures: 1,
-          date: new Date().toISOString().split('T')[0]
+          date: new Date().toISOString().split('T')[0],
+          image_url
         };
         
         // Optimistic update
@@ -301,6 +351,40 @@ export const useStore = create<AppState>()(
         if (data) {
           set((state) => ({
             petitions: state.petitions.map(p => p.id === tempId ? data : p)
+          }));
+        }
+      },
+
+      createFund: async (title, target, image_url) => {
+        const newFund = {
+          title,
+          target,
+          collected: 0,
+          donors: 0,
+          image_url
+        };
+        const tempId = Date.now();
+        set((state) => ({
+          funds: [{ id: tempId, ...newFund } as unknown as Fund, ...state.funds]
+        }));
+        const { data } = await supabase.from('funds').insert([newFund]).select().single();
+        if (data) {
+          set((state) => ({
+            funds: state.funds.map(f => f.id === tempId ? data : f)
+          }));
+        }
+      },
+
+      createEvent: async (title, date, location, image_url) => {
+        const newEvent = { title, date, location, image_url };
+        const tempId = Date.now();
+        set((state) => ({
+          events: [{ id: tempId, ...newEvent } as unknown as Event, ...state.events]
+        }));
+        const { data } = await supabase.from('events').insert([newEvent]).select().single();
+        if (data) {
+          set((state) => ({
+            events: state.events.map(e => e.id === tempId ? data : e)
           }));
         }
       },
