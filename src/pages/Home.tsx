@@ -232,12 +232,12 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="modal-glass p-8"
-              style={{ width: '100%', maxWidth: '600px', position: 'relative' }}
+              className="modal-glass"
+              style={{ width: '100%', maxWidth: '600px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
             >
-              <button onClick={() => setPetitionModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)' }}><X size={24} /></button>
-              <h2 className="text-2xl font-extrabold mb-6">Buat Petisi / Voting Baru</h2>
-              <div className="flex flex-col gap-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+              <div className="p-6 md:p-8 flex flex-col gap-5">
+                <button onClick={() => setPetitionModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)', zIndex: 10 }}><X size={24} /></button>
+                <h2 className="text-2xl font-extrabold pr-8 mb-2">Buat Petisi / Voting Baru</h2>
                 <div className="flex gap-4 mb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="type" checked={petitionType === 'petition'} onChange={() => setPetitionType('petition')} />
@@ -366,12 +366,12 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="modal-glass p-8"
-              style={{ width: '100%', maxWidth: '600px', position: 'relative' }}
+              className="modal-glass"
+              style={{ width: '100%', maxWidth: '600px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
             >
-              <button onClick={() => setFundModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)' }}><X size={24} /></button>
-              <h2 className="text-2xl font-extrabold mb-6">Buat Galang Dana Baru</h2>
-              <div className="flex flex-col gap-5">
+              <div className="p-6 md:p-8 flex flex-col gap-5">
+                <button onClick={() => setFundModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)', zIndex: 10 }}><X size={24} /></button>
+                <h2 className="text-2xl font-extrabold pr-8 mb-2">Buat Galang Dana Baru</h2>
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-secondary">Judul Galang Dana</label>
                   <input type="text" className="input" placeholder="Contoh: Renovasi Poskamling" value={fundTitle} onChange={e => setFundTitle(e.target.value)} />
@@ -409,12 +409,12 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="modal-glass p-8"
-              style={{ width: '100%', maxWidth: '600px', position: 'relative' }}
+              className="modal-glass"
+              style={{ width: '100%', maxWidth: '600px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
             >
-              <button onClick={() => setEventModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)' }}><X size={24} /></button>
-              <h2 className="text-2xl font-extrabold mb-6">Tambah Acara Lokal</h2>
-              <div className="flex flex-col gap-5">
+              <div className="p-6 md:p-8 flex flex-col gap-5">
+                <button onClick={() => setEventModalOpen(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', color: 'var(--text-secondary)', zIndex: 10 }}><X size={24} /></button>
+                <h2 className="text-2xl font-extrabold pr-8 mb-2">Tambah Acara Lokal</h2>
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-secondary">Nama Acara</label>
                   <input type="text" className="input" placeholder="Kerja Bakti RT 01" value={eventTitle} onChange={e => setEventTitle(e.target.value)} />

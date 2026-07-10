@@ -347,8 +347,11 @@ export const useStore = create<AppState>()(
         }));
 
         // Real DB insert
-        const { data } = await supabase.from('petitions').insert([newPetition]).select().single();
-        if (data) {
+        const { data, error } = await supabase.from('petitions').insert([newPetition]).select().single();
+        if (error) {
+          console.error("Error creating petition:", error);
+          alert("Gagal menyimpan petisi ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+        } else if (data) {
           set((state) => ({
             petitions: state.petitions.map(p => p.id === tempId ? data : p)
           }));
@@ -367,8 +370,11 @@ export const useStore = create<AppState>()(
         set((state) => ({
           funds: [{ id: tempId, ...newFund } as unknown as Fund, ...state.funds]
         }));
-        const { data } = await supabase.from('funds').insert([newFund]).select().single();
-        if (data) {
+        const { data, error } = await supabase.from('funds').insert([newFund]).select().single();
+        if (error) {
+          console.error("Error creating fund:", error);
+          alert("Gagal menyimpan galang dana ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+        } else if (data) {
           set((state) => ({
             funds: state.funds.map(f => f.id === tempId ? data : f)
           }));
@@ -381,8 +387,11 @@ export const useStore = create<AppState>()(
         set((state) => ({
           events: [{ id: tempId, ...newEvent } as unknown as Event, ...state.events]
         }));
-        const { data } = await supabase.from('events').insert([newEvent]).select().single();
-        if (data) {
+        const { data, error } = await supabase.from('events').insert([newEvent]).select().single();
+        if (error) {
+          console.error("Error creating event:", error);
+          alert("Gagal menyimpan acara ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+        } else if (data) {
           set((state) => ({
             events: state.events.map(e => e.id === tempId ? data : e)
           }));
