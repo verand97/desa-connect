@@ -35,7 +35,8 @@ interface AppState {
   a11yHighContrast: boolean;
   toggleA11y: () => void;
   user: User | null;
-  login: (username: string, role?: 'citizen' | 'rtrw' | 'superadmin', nik?: string) => void;
+  login: (username: string, password?: string) => Promise<boolean>;
+  register: (username: string, password?: string, nik?: string) => Promise<boolean>;
   logout: () => void;
   isOffline: boolean;
   setOffline: (status: boolean) => void;
@@ -169,27 +170,86 @@ export const useStore = create<AppState>()(
       user: null,
       loginModalOpen: false,
       setLoginModalOpen: (isOpen) => set({ loginModalOpen: isOpen }),
-      login: (username, role = 'citizen', nik?: string) => {
-        let finalName = username.trim() || 'Anonim_' + Math.floor(Math.random() * 1000);
-        let isVerified = false;
-        
-        if (role === 'rtrw' || role === 'superadmin') {
-          isVerified = true;
-        } else if (nik && nik.length === 16) {
-          isVerified = true;
-          finalName = username.trim() || 'Warga Terverifikasi';
-        }
+      login: async (username, password = '') => {
+        try {
+          const { data, error } = await supabase
+            .from('app_users')
+            .select('*')
+            .eq('username', username)
+            .eq('password', password)
+            .single();
 
-        set({ 
-          user: { 
-            username: finalName, 
-            name: finalName, 
-            role, 
-            verified: isVerified,
-            nik
-          },
-          loginModalOpen: false 
-        });
+          if (error || !data) {
+            console.error('Login failed', error);
+            alert('ID Akun atau kata sandi salah!');
+            return false;
+          }
+
+          set({ 
+            user: { 
+              username: data.username, 
+              name: data.username, 
+              role: data.role, 
+              verified: data.verified,
+              nik: data.nik
+            },
+            loginModalOpen: false 
+          });
+          return true;
+        } catch (err) {
+          console.error(err);
+          alert('Terjadi kesalahan sistem.');
+          return false;
+        }
+      },
+      register: async (username, password = '', nik?: string) => {
+        try {
+          // Check if exists
+          const { data: existing } = await supabase.from('app_users').select('id').eq('username', username).maybeSingle();
+          if (existing) {
+            alert('Nama Samaran / ID Akun sudah terpakai!');
+            return false;
+          }
+
+          let finalName = username.trim() || 'Anonim_' + Math.floor(Math.random() * 1000);
+          let isVerified = false;
+          
+          if (nik && nik.length === 16) {
+            isVerified = true;
+          }
+
+          const newUser = {
+            username: finalName,
+            password,
+            role: 'citizen',
+            nik: nik || null,
+            verified: isVerified
+          };
+
+          const { data, error } = await supabase.from('app_users').insert([newUser]).select().single();
+          
+          if (error || !data) {
+            console.error('Register failed', error);
+            alert('Gagal mendaftar, coba lagi.');
+            return false;
+          }
+
+          set({ 
+            user: { 
+              username: data.username, 
+              name: data.username, 
+              role: data.role, 
+              verified: data.verified,
+              nik: data.nik
+            },
+            loginModalOpen: false 
+          });
+          return true;
+        } catch (err) {
+          console.error(err);
+          alert('Terjadi kesalahan sistem.');
+          return false;
+        }
       },
       logout: () => set({ user: null }),
       isOffline: !navigator.onLine,

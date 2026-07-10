@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '../store';
 
 const LoginModal = () => {
-  const { loginModalOpen, setLoginModalOpen, login } = useStore();
+  const { loginModalOpen, setLoginModalOpen, login, register } = useStore();
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -20,29 +20,17 @@ const LoginModal = () => {
     setIsRegister(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 1. Cek admin
-    if (password === 'admin123') {
-      if (username.toLowerCase() === 'rtrw') {
-        login('Admin RT/RW', 'rtrw');
-      } else {
-        login(username || 'Superadmin Desa', 'superadmin');
-      }
-      return;
-    }
-
-    // 2. Warga (Kredensial disimulasikan diterima)
-    if (nik) {
-      if (/^\d{16}$/.test(nik)) {
-        login(username, 'citizen', nik);
-      } else {
+    if (isRegister) {
+      if (nik && !/^\d{16}$/.test(nik)) {
         alert('NIK harus berupa 16 digit angka!');
+        return;
       }
+      await register(username, password, nik);
     } else {
-      // Warga Anonim
-      login(username, 'citizen');
+      await login(username, password);
     }
   };
 
