@@ -62,6 +62,9 @@ interface AppState {
   setOffline: (status: boolean) => void;
   loginModalOpen: boolean;
   setLoginModalOpen: (isOpen: boolean) => void;
+  toasts: { id: number, message: string, type: 'success' | 'error' | 'info' }[];
+  addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  removeToast: (id: number) => void;
   petitions: Petition[];
   funds: Fund[];
   events: Event[];
@@ -194,6 +197,17 @@ export const useStore = create<AppState>()(
       user: null,
       loginModalOpen: false,
       setLoginModalOpen: (isOpen) => set({ loginModalOpen: isOpen }),
+      
+      toasts: [],
+      addToast: (message, type = 'info') => {
+        const id = Date.now();
+        set((state) => ({ toasts: [...state.toasts, { id, message, type }] }));
+        setTimeout(() => {
+          set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }));
+        }, 4000);
+      },
+      removeToast: (id) => set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) })),
+
       login: async (username, password = '') => {
         try {
           const { data, error } = await supabase
@@ -352,9 +366,12 @@ export const useStore = create<AppState>()(
           console.error("Error creating petition:", error);
           alert(`Gagal menyimpan petisi ke database.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}\n\nPastikan struktur tabel Supabase sudah diperbarui.`);
         } else if (data) {
-          set((state) => ({
-            petitions: state.petitions.map(p => p.id === tempId ? data : p)
-          }));
+          set((state) => {
+            state.addToast(`Berhasil menerbitkan petisi: ${title}`, 'success');
+            return {
+              petitions: state.petitions.map(p => p.id === tempId ? data : p)
+            };
+          });
         }
       },
 
@@ -375,9 +392,12 @@ export const useStore = create<AppState>()(
           console.error("Error creating fund:", error);
           alert(`Gagal menyimpan galang dana.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}`);
         } else if (data) {
-          set((state) => ({
-            funds: state.funds.map(f => f.id === tempId ? data : f)
-          }));
+          set((state) => {
+            state.addToast(`Galang dana baru ditambahkan: ${title}`, 'success');
+            return {
+              funds: state.funds.map(f => f.id === tempId ? data : f)
+            };
+          });
         }
       },
 
@@ -392,9 +412,12 @@ export const useStore = create<AppState>()(
           console.error("Error creating event:", error);
           alert(`Gagal menyimpan acara.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}`);
         } else if (data) {
-          set((state) => ({
-            events: state.events.map(e => e.id === tempId ? data : e)
-          }));
+          set((state) => {
+            state.addToast(`Acara lokal dijadwalkan: ${title}`, 'success');
+            return {
+              events: state.events.map(e => e.id === tempId ? data : e)
+            };
+          });
         }
       },
 
