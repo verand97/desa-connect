@@ -332,7 +332,7 @@ export const useStore = create<AppState>()(
           description,
           type,
           poll_options: type === 'vote' ? poll_options : null,
-          deadline,
+          deadline: deadline ? deadline : null,
           target,
           status: 'pending',
           signatures: 1,
@@ -350,7 +350,7 @@ export const useStore = create<AppState>()(
         const { data, error } = await supabase.from('petitions').insert([newPetition]).select().single();
         if (error) {
           console.error("Error creating petition:", error);
-          alert("Gagal menyimpan petisi ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+          alert(`Gagal menyimpan petisi ke database.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}\n\nPastikan struktur tabel Supabase sudah diperbarui.`);
         } else if (data) {
           set((state) => ({
             petitions: state.petitions.map(p => p.id === tempId ? data : p)
@@ -373,7 +373,7 @@ export const useStore = create<AppState>()(
         const { data, error } = await supabase.from('funds').insert([newFund]).select().single();
         if (error) {
           console.error("Error creating fund:", error);
-          alert("Gagal menyimpan galang dana ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+          alert(`Gagal menyimpan galang dana.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}`);
         } else if (data) {
           set((state) => ({
             funds: state.funds.map(f => f.id === tempId ? data : f)
@@ -390,7 +390,7 @@ export const useStore = create<AppState>()(
         const { data, error } = await supabase.from('events').insert([newEvent]).select().single();
         if (error) {
           console.error("Error creating event:", error);
-          alert("Gagal menyimpan acara ke database. Pastikan struktur tabel Supabase sudah diperbarui.");
+          alert(`Gagal menyimpan acara.\n\nDetail Error: ${error.message}\nPetunjuk: ${error.hint || '-'}`);
         } else if (data) {
           set((state) => ({
             events: state.events.map(e => e.id === tempId ? data : e)
